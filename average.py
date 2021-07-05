@@ -6,7 +6,7 @@ Assumes an orthorhombic cell.
 from argparse import ArgumentParser
 
 
-def read_cube(fname):
+def read_cube(fname, isovalue):
     """
     Read in a cube file.
 
@@ -39,7 +39,8 @@ def read_cube(fname):
                 for k in range(grid_points[2]):
                     if len(split) == 0:
                         split = next(ifile).split()
-                    data[i, j, k] = float(split[0])**2
+                    if float(split[0])**2 > isovalue:
+                        data[i, j, k] = float(split[0])**2
                     split = split[1:]
 
     return data, spacing
@@ -49,9 +50,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("file", type=str,
                         help="the path to the file to process")
+    parser.add_argument("iso_value", type=float, 
+                        help="the isosurface value cutoff")
     args = parser.parse_args()
 
     # Read in the data.
-    data, spacing = read_cube(args.file)
+    data, spacing = read_cube(args.file, args.iso_value)
 
     print(data.mean())
