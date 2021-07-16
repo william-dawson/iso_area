@@ -34,6 +34,7 @@ if __name__ == "__main__":
     mask = where(filtered > 0)
 
     # Print the averages.
+    print("Total Volume", sumval)
     print("Average (Whole Domain):", sumval / filtered.size)
     print("Average (Iso-Surface Contained)", sumval / len(mask[0]))
     print("Size of the Isosurface (Fraction of Domain)", 
