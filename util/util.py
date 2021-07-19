@@ -3,6 +3,16 @@ Utility functions.
 """
 
 
+def apply_functional(data, fname):
+    if fname is None:
+        return 0 * data
+    import pylibxc
+    from numpy import reshape, multiply
+    func = pylibxc.LibXCFunctional(fname, "unpolarized")
+    val = func.compute({"rho": data})
+    return multiply(reshape(val["vrho"], data.shape), data)
+
+
 def read_cube(fname):
     """
     Read in a cube file.
