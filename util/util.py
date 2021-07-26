@@ -6,11 +6,19 @@ Utility functions.
 def apply_functional(data, fname):
     if fname is None:
         return 0 * data
+    from numpy import multiply
+    pot = compute_potential(data, fname)
+    return multiply(pot, data)
+
+
+def compute_potential(data, fname):
+    if fname is None:
+        return 0 * data
     import pylibxc
-    from numpy import reshape, multiply
+    from numpy import reshape
     func = pylibxc.LibXCFunctional(fname, "unpolarized")
     val = func.compute({"rho": data})
-    return multiply(reshape(val["vrho"], data.shape), data)
+    return reshape(val["vrho"], data.shape)
 
 
 def read_cube(fname):
@@ -30,7 +38,12 @@ def read_cube(fname):
         next(ifile)
         next(ifile)
         split = next(ifile).split()
-        natoms = abs(int(split[0]))
+        natoms = int(split[0])
+        if natoms < 0:
+            wf = True
+        else:
+            wf = False
+        natoms = abs(natoms)
         for i in range(3):
             split = next(ifile).split()
             grid_points.append(int(split[0]))
@@ -39,7 +52,8 @@ def read_cube(fname):
         data = zeros(grid_points)
         for i in range(natoms):
             next(ifile)
-        next(ifile)
+        if wf:
+            next(ifile)
         split = next(ifile).split()
         for i in range(grid_points[0]):
             for j in range(grid_points[1]):
